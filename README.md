@@ -25,6 +25,3 @@ $ python leakcheck.py
 Documentation
 -------------
 The code is straightforward and is liberally documented. Also see the manual for the SRS RGA series, currently located at http://www.thinksrs.com/downloads/PDFs/Manuals/RGAm.pdf.
-=======
-leakcheck
-=========
