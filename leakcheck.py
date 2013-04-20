@@ -31,7 +31,8 @@ rga.write("nf0\r")
 # Reset the zero of the detector.
 rga.write("ca\r")
 
-# Clear serial buffer after this initialization.
+# Hang out for a second so the RGA can fill up the buffer then clear serial buffer after this initialization.
+serial.time.sleep(5)
 rga.readlines()
 
 start_time = serial.time.time()
@@ -47,17 +48,25 @@ plt.ion()
 fig = plt.figure()
 
 # Look for He.
-for indx in range(10):
-	buffer = ""
+for indx in range(1000):
+	buf = ""
 	rga.write("mr" + cmr + "\r")
 
 	# Hang out until the rga's buffer fills up with a legit value.
-	while len(buffer) < 4:
-	    buffer = buffer + rga.read(rga.inWaiting())
+	while rga.inWaiting() < 4:
+		pass
 
-	# print decode_current_to_pressure(buffer)
-	pressure = decode_current_to_pressure(buffer)
-	plt.plot(serial.time.time() - start_time, pressure, "kx")
-	plt.draw()
+	print "rga.inWaiting():", rga.inWaiting()
+	buf = rga.readlines()[0]
+	print "buf:", buf
+	print "len(buf):", len(buf)
+
+	pressure = decode_current_to_pressure(buf)
+	print "indx:", indx
+	print "pressure", pressure
+	print "=" * 10
+	if pressure > 0:
+		plt.semilogy(serial.time.time() - start_time, pressure, "kx")
+		plt.draw()
 	# Hang out for a moment so matplotlib doesn't freak out.
 	serial.time.sleep(0.05)
